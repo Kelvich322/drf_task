@@ -10,6 +10,9 @@ class EventVenue(models.Model):
     class Meta:
         db_table = "event_venues"
 
+    def __str__(self):
+        return self.name
+
 
 class Event(models.Model):
     class EventStatus(models.TextChoices):
