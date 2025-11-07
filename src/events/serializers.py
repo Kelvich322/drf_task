@@ -6,6 +6,8 @@ class EventsVenueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = EventVenue
         fields = ["id", "name"]
+
+
 class EventsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event

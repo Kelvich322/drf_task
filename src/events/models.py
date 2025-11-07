@@ -19,11 +19,7 @@ class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     name = models.CharField(max_length=255, null=False)
     date = models.DateTimeField(null=False)
-    status = models.CharField(
-        max_length=10,
-        choices=EventStatus.choices,
-        null=False
-    )
+    status = models.CharField(max_length=10, choices=EventStatus.choices, null=False)
     venue = models.ForeignKey(EventVenue, on_delete=models.CASCADE, null=True)
 
     class Meta:
