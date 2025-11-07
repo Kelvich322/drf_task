@@ -26,4 +26,5 @@ class Event(models.Model):
     )
     venue = models.ForeignKey(EventVenue, on_delete=models.CASCADE, null=True)
 
-    
+    class Meta:
+        db_table = "events"
