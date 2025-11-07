@@ -352,3 +352,7 @@ venv.bak/
 .idea/
 
 # Visual Studio
+
+#DBCode
+db.sqlite3-shm
+db.sqlite3-wal
