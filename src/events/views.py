@@ -7,7 +7,7 @@ from .models import Event, EventVenue
 from .serializers import EventSerializer, EventVenueSerializer
 
 
-class EventVenueViewSet(ModelViewSet):  # ← Добавить этот ViewSet
+class EventVenueViewSet(ModelViewSet):
     queryset = EventVenue.objects.all()
     serializer_class = EventVenueSerializer
 
