@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from httpx import Client, HTTPStatusError
 
+from src.core.settings import JWT_TOKEN
 from src.events.models import Event, EventVenue
 
 from ...models import SyncResult
@@ -14,7 +15,6 @@ class Command(BaseCommand):
 
     API_URL = "https://events.k3scluster.tech/api/events/"
     CLIENT = Client()
-    JWT_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc19zdGFmZiI6ZmFsc2UsInN1YiI6IjE3IiwiZXhwIjoxNzYzMDUwMzAyLCJpYXQiOjE3NjI5NjM5MDJ9.1lwcjMzv6PpYf4-4weOb6hoh-zuX7QTHgF9bOW12faewwK_fvPAg-DFX6jDVPCEpGUU3pHOE_PKhlFggOmVtTmF3DG_Nz9ikzbgCw2zSTRP5sg3uwhETDU7cLVuL4P0DjPQWauUUx1Mypz9114rgkcqGKdRIa6mz4m7ieVtnLZO6CEKR1DcA9hy7EcMdGTUXGsT5coUfkvzMt7uXhBOnWmk0wWgnE0AN1fD7eEgfGcsR0ZKR4I7hO7TiAf73nAloNoDjdp9-naD86NfckrBslxKNkAx7Rlxp8vZake4y6sUPIxjqishR9B1tmz_pXzzjNdYrm7t2FtLshKEyZBLViQ"
 
     def add_arguments(self, parser):
         parser.add_argument("--all", action="store_true", help="Sync all events")
@@ -87,7 +87,7 @@ class Command(BaseCommand):
     def fetch_events_data(self, url):
         """Получение данных из внешнего API"""
         try:
-            headers = {"Authorization": f"Bearer {self.JWT_TOKEN}"}
+            headers = {"Authorization": f"Bearer {JWT_TOKEN}"}
             response = self.CLIENT.get(url, headers=headers)
             response.raise_for_status()
 

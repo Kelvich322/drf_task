@@ -30,3 +30,18 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class EventRegistration(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="registrations"
+    )
+    full_name = models.CharField(max_length=128)
+    email = models.EmailField()
+    confirmation_code = models.CharField(max_length=10, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "event_registrations"
+        unique_together = ["event", "email"]

@@ -10,13 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from datetime import timedelta
 from pathlib import Path
 
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
+env = environ.Env(JWT_TOKEN=(str), OWNER_ID=(str))
+environ.Env.read_env(os.path.join(BASE_DIR.parent, ".env"))
+JWT_TOKEN = env("JWT_TOKEN")
+OWNER_ID = env("OWNER_ID")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
