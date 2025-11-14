@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "src.events",
     "src.jwtauth",
+    "src.sync",
 ]
 
 MIDDLEWARE = [
