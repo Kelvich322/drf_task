@@ -1,18 +1,14 @@
 import random
-import time
 
 from django.db import transaction
 from django.db.models import Prefetch
-from httpx import Client
 from rest_framework import filters, permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from src.core.settings import JWT_TOKEN, OWNER_ID
-
-from .models import Event, EventRegistration, EventVenue
+from .models import Event, EventRegistration, EventVenue, OutboxEvent
 from .serializers import (
     EventRegistrationSerializer,
     EventSerializer,
@@ -82,50 +78,28 @@ def register_for_event(request, event_id):
                 confirmation_code=confirmation_code,
             )
 
-            email_sent = send_confirmation_email(registration)
+            OutboxEvent.objects.create(
+                topic="registration_confirm",
+                payload={
+                    "registration_id": str(registration.id),
+                    "email": registration.email,
+                    "confirmation_code": confirmation_code,
+                },
+            )
 
-            if email_sent:
-                return Response(
-                    {
-                        "message": "Registration successful. Confirmation code sent to your email.",
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
-            else:
-                raise Exception("Failed to send confirmation email")
+            return Response(
+                {
+                    "message": "Registration successful. Confirmation code sent to your email.",
+                },
+                status=status.HTTP_201_CREATED,
+            )
 
-    except Exception:
+    except Exception as e:
         return Response(
-            {"error": "Registration failed"},
+            {"error": "Registration failed", "datail": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
 
 def generate_confirmation_code():
     return random.randint(11111, 99999)
-
-
-def send_confirmation_email(registration: EventRegistration):
-    NOTIFICATIONS_URL = "https://notifications.k3scluster.tech/api/notifications"
-    CLIENT = Client()
-
-    email_message = f"Your verification code: {registration.confirmation_code}"
-
-    payload = {
-        "id": str(registration.id),
-        "owner_id": OWNER_ID,
-        "email": registration.email,
-        "message": email_message,
-    }
-
-    headers = {
-        "Authorization": f"Bearer {JWT_TOKEN}",
-        "Content-Type": "application/json",
-        "accept": "application/json",
-    }
-
-    while True:
-        response = CLIENT.post(NOTIFICATIONS_URL, json=payload, headers=headers)
-        if response.status_code == 201:
-            return True
-        time.sleep(1.5)

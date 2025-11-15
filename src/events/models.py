@@ -45,3 +45,15 @@ class EventRegistration(models.Model):
     class Meta:
         db_table = "event_registrations"
         unique_together = ["event", "email"]
+
+
+class OutboxEvent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    topic = models.CharField(max_length=255)
+    payload = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    processed = models.BooleanField(default=False)
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "outbox_events"
